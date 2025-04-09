@@ -1,6 +1,8 @@
 main {
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
   width: 100vw;
 }
@@ -13,13 +15,34 @@ main {
   overflow: hidden;
 }
 
-.box {
+input[type="text"] {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: hotpink;
-  height: 120px;
-  width: 120px;
+  padding: 10px;
+  min-width: 100px;
   border-radius: 10px;
+  cursor: pointer;
+}
+
+input[type="text"]:focus {
+  outline: none;
+}
+
+input[type="text"].selected {
+  border: 2px solid #f18cde;
+}
+
+.svg-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-input {
+  padding: 10px;
   cursor: pointer;
 }

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 
-export function useDragger(id: string): void {
+export function useDragger(id: string, updateCoords: (id: string, x: number, y: number) => void): void {
   const isClicked = useRef<boolean>(false);
 
   const coords = useRef<{
@@ -24,30 +24,43 @@ export function useDragger(id: string): void {
 
     const onMouseDown = (e: MouseEvent) => {
       isClicked.current = true;
-      coords.current.startX = e.clientX;
-      coords.current.startY = e.clientY;
+
+      // Get the position of the element relative to the page or container
+      coords.current.startX = e.clientX - target.offsetLeft;
+      coords.current.startY = e.clientY - target.offsetTop;
+
+      // Save current position as the last known position
+      coords.current.lastX = target.offsetLeft;
+      coords.current.lastY = target.offsetTop;
     };
 
     const onMouseUp = (e: MouseEvent) => {
       isClicked.current = false;
       coords.current.lastX = target.offsetLeft;
       coords.current.lastY = target.offsetTop;
+
+      // Update the parent component with new coordinates
+      updateCoords(id, coords.current.lastX, coords.current.lastY);
     };
 
     const onMouseMove = (e: MouseEvent) => {
-      if (!isClicked.current) return;
+      if (!isClicked.current) return; // Prevent movement when not clicked
 
-      const nextX = e.clientX - coords.current.startX + coords.current.lastX;
-      const nextY = e.clientY - coords.current.startY + coords.current.lastY;
+      // Calculate the new position by taking into account the starting offset
+      const nextX = e.clientX - coords.current.startX;
+      const nextY = e.clientY - coords.current.startY;
 
-      target.style.top = `${nextY}px`;
       target.style.left = `${nextX}px`;
+      target.style.top = `${nextY}px`;
+
+      console.log(`Dragged to: X: ${nextX}, Y: ${nextY}`);
     };
 
+    // Add mouse event listeners to the target element and container
     target.addEventListener("mousedown", onMouseDown);
     target.addEventListener("mouseup", onMouseUp);
     container.addEventListener("mousemove", onMouseMove);
-    container.addEventListener("mouseleave", onMouseUp);
+    container.addEventListener("mouseleave", onMouseUp); // Ensure the drag stops if mouse leaves
 
     const cleanup = () => {
       target.removeEventListener("mousedown", onMouseDown);
@@ -57,5 +70,5 @@ export function useDragger(id: string): void {
     };
 
     return cleanup;
-  }, [id]);
+  }, [id, updateCoords]);
 }
