@@ -1,48 +1,15 @@
 import React, { useState } from "react";
 import { useTextboxContext } from "../context";
 import { SVGElement } from "../utils/parseSVG";
+import { splitSVGElements } from "../utils/splitSVG";
 
 interface PropertiesPanelProps {
   parsedSvg: SVGElement[]; // Pass parsed SVG elements to the panel
   onColorChange: (id: string, color: string) => void;
 }
 
-const renderSVGElements = (
-  elements: SVGElement[],
-  handleSelect: (id: string) => void,
-  selectedId: string,
-  onColorChange: (id: string, color: string) => void
-) => {
-  return elements.map((element) => (
-    <div key={element.id} className="propertyElement">
-      <div>
-        {/* Select this element to modify */}
-        <label>
-          <input type="radio" checked={selectedId === element.id} onChange={() => handleSelect(element.id)} />
-          {element.tag} (ID: {element.id})
-        </label>
-
-        {selectedId === element.id && (
-          <>
-            <br />
-            <label>Color:</label>
-            <input type="color" onChange={(e) => onColorChange(element.id, e.target.value)} />
-          </>
-        )}
-      </div>
-
-      {/* Recursively render children if they exist */}
-      {element.children && element.children.length > 0 && (
-        <div style={{ marginLeft: "20px" }}>
-          {renderSVGElements(element.children, handleSelect, selectedId, onColorChange)}
-        </div>
-      )}
-    </div>
-  ));
-};
-
 export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ parsedSvg, onColorChange }) => {
-  const { selectedTextbox, textboxes, updateTextboxStyle } = useTextboxContext();
+  const { selectedTextbox, textboxes, updateTextboxStyle, updateTextboxMeta } = useTextboxContext();
   const [selectedElementId, setSelectedElementId] = useState<string>("");
 
   // Make sure selectedTextbox is not null before proceeding
@@ -65,7 +32,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ parsedSvg, onC
   };
 
   return (
-    <div className="propertiesPanel">
+    <div className="properties-panel">
       <h3>Properties Panel</h3>
 
       {/* Textbox properties */}
@@ -126,12 +93,56 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ parsedSvg, onC
             onChange={(e) => handleStyleChange("textColor", e.target.value)}
           />
         </div>
+
+        <h4>Textbox Metadata</h4>
+        <div>
+          <input
+            type="text"
+            value={selectedTextboxObj.name || ""}
+            onChange={(e) => updateTextboxMeta(selectedTextboxObj.id, { name: e.target.value })}
+            placeholder="Enter label..."
+          />
+        </div>
+        <br />
+        <div>
+          <input
+            type="text"
+            value={selectedTextboxObj.tag || ""}
+            onChange={(e) => updateTextboxMeta(selectedTextboxObj.id, { tag: e.target.value })}
+            placeholder="Enter tag..."
+          />
+        </div>
       </div>
 
       {/* SVG elements */}
       <div>
-        <h4>SVG Element Styles</h4>
-        {renderSVGElements(parsedSvg, handleSelect, selectedElementId, onColorChange)}
+        <h4>SVG Shapes</h4>
+        {splitSVGElements(parsedSvg).map(([shape]) => (
+          <div
+            key={shape.id}
+            className={`shape-entry ${selectedElementId === shape.id ? "selected" : ""}`}
+            onClick={() => handleSelect(shape.id)}
+          >
+            <div className="shape-info">
+              <input
+                type="radio"
+                name="svg-shape"
+                checked={selectedElementId === shape.id}
+                onChange={() => handleSelect(shape.id)}
+              />
+              <span>
+                <strong>{shape.tag}</strong> (ID: <code>{shape.id}</code>)
+              </span>
+            </div>
+
+            {selectedElementId === shape.id && (
+              <div className="color-picker">
+                <label>Fill Color:</label>
+                <input type="color" onChange={(e) => onColorChange(shape.id, e.target.value)} />
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

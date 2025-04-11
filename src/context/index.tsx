@@ -4,6 +4,8 @@ interface Textbox {
   id: string;
   x: number;
   y: number;
+  name?: string;
+  tag?: string;
   style: {
     borderStyle: string;
     borderColor: string;
@@ -31,6 +33,7 @@ interface TextboxContextProps {
   logos: Logo[];
   addLogo: (src: string) => void;
   updateLogoCoords: (id: string, x: number, y: number) => void;
+  updateTextboxMeta: (id: string, updates: { name?: string; tag?: string }) => void;
 }
 
 const TextboxContext = createContext<TextboxContextProps | undefined>(undefined);
@@ -49,6 +52,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
       id: `textbox-${textboxes.length + 1}`,
       x: 50,
       y: 50,
+
       style: {
         borderStyle: "solid",
         borderColor: "#000000",
@@ -71,6 +75,10 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
 
   const updateTextboxCoords = (id: string, x: number, y: number) => {
     setTextboxes((prev) => prev.map((textbox) => (textbox.id === id ? { ...textbox, x, y } : textbox)));
+  };
+
+  const updateTextboxMeta = (id: string, updates: { name?: string; tag?: string }) => {
+    setTextboxes((prev) => prev.map((textbox) => (textbox.id === id ? { ...textbox, ...updates } : textbox)));
   };
 
   const addLogo = (src: string) => {
@@ -99,6 +107,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
         logos,
         addLogo,
         updateLogoCoords,
+        updateTextboxMeta,
       }}
     >
       {children}

@@ -4,13 +4,12 @@ import { useTextboxContext } from "../context";
 
 interface TextboxProps {
   id: string;
-  x: number;
-  y: number;
+
   style: any;
   selected: boolean;
 }
 
-export const Textbox: React.FC<TextboxProps> = ({ id, x, y, style, selected }) => {
+export const Textbox: React.FC<TextboxProps> = ({ id, style, selected }) => {
   const [inputValue, setInputValue] = useState(id);
   const { selectTextbox, updateTextboxCoords } = useTextboxContext();
 

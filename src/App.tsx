@@ -77,39 +77,42 @@ const App: React.FC = () => {
   };
 
   return (
-    <main>
-      <button onClick={addTextbox}>Add Textbox</button>
+    <main className="app-layout">
+      {/* Toolbar */}
+      <aside className="toolbar">
+        <h2>Tools</h2>
+        <button onClick={addTextbox} className="toolbar-button">
+          Add Textbox
+        </button>
 
-      <label htmlFor="svg-upload" className="file-label">
-        Upload SVG
-      </label>
-      <input id="svg-upload" type="file" accept=".svg" className="upload-input" onChange={(e) => handleFileUpload(e)} />
+        <label htmlFor="svg-upload" className="file-label">
+          Upload SVG
+        </label>
+        <input id="svg-upload" type="file" accept=".svg" className="upload-input" onChange={handleFileUpload} />
 
-      <label htmlFor="logo-upload" className="file-label">
-        Upload Logo Image
-      </label>
-      <input id="logo-upload" type="file" accept="image/*" className="upload-input" onChange={handleLogoUpload} />
+        <label htmlFor="logo-upload" className="file-label">
+          Upload Logo
+        </label>
+        <input id="logo-upload" type="file" accept="image/*" className="upload-input" onChange={handleLogoUpload} />
+      </aside>
 
-      <div className="container">
-        {svgContent ? <div className="svg-container">{svgContent}</div> : null}
+      {/* Canvas */}
+      <section className="container">
+        {svgContent && <div className="svg-container">{svgContent}</div>}
 
         {textboxes.map(({ id, x, y, style }) => (
-          <Textbox
-            key={id}
-            id={id}
-            x={x}
-            y={y}
-            style={style}
-            selected={false} // logic to highlight the selected box will go here
-          />
+          <Textbox key={id} id={id} style={style} selected={false} />
         ))}
 
         {logos.map(({ id, src }) => (
           <Logo key={id} id={id} src={src} />
         ))}
-      </div>
+      </section>
 
-      <PropertiesPanel parsedSvg={parsedSvg} onColorChange={handleColorChange} />
+      {/* Properties */}
+      <aside className="properties">
+        <PropertiesPanel parsedSvg={parsedSvg} onColorChange={handleColorChange} />
+      </aside>
     </main>
   );
 };
