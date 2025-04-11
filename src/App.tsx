@@ -5,35 +5,46 @@ import { Textbox } from "./components/Textbox";
 import { PropertiesPanel } from "./components/PropertiesPanel";
 import { serializeSVG } from "./utils/serializeSVG";
 import { parseSVG, SVGElement } from "./utils/parseSVG";
-
-const handleFileUpload = (
-  e: React.ChangeEvent<HTMLInputElement>,
-  setSvgContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
-  setParsedSvg: React.Dispatch<React.SetStateAction<SVGElement[]>>
-) => {
-  const file = e.target.files?.[0];
-
-  if (file && file.type === "image/svg+xml") {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const svgContent = reader.result as string;
-
-      const parsedElements = parseSVG(svgContent);
-      setParsedSvg(parsedElements);
-
-      const updatedSvg = serializeSVG(parsedElements);
-      setSvgContent(<div dangerouslySetInnerHTML={{ __html: updatedSvg }} />);
-    };
-    reader.readAsText(file);
-  } else {
-    alert("Please upload an SVG file.");
-  }
-};
+import { Logo } from "./components/Logo";
 
 const App: React.FC = () => {
-  const { textboxes, addTextbox } = useTextboxContext();
+  const { textboxes, addTextbox, logos, addLogo } = useTextboxContext();
   const [svgContent, setSvgContent] = useState<ReactNode | null>(null);
   const [parsedSvg, setParsedSvg] = useState<SVGElement[]>([]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file && file.type === "image/svg+xml") {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const svgContent = reader.result as string;
+
+        const parsedElements = parseSVG(svgContent);
+        setParsedSvg(parsedElements);
+
+        const updatedSvg = serializeSVG(parsedElements);
+        setSvgContent(<div dangerouslySetInnerHTML={{ __html: updatedSvg }} />);
+      };
+      reader.readAsText(file);
+    } else {
+      alert("Please upload an SVG file.");
+    }
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageUrl = reader.result as string;
+        addLogo(imageUrl);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert("Please upload an image file.");
+    }
+  };
 
   const handleColorChange = (id: string, color: string) => {
     const updateElementColor = (element: SVGElement): SVGElement => {
@@ -68,12 +79,17 @@ const App: React.FC = () => {
   return (
     <main>
       <button onClick={addTextbox}>Add Textbox</button>
-      <input
-        type="file"
-        accept=".svg"
-        className="upload-input"
-        onChange={(e) => handleFileUpload(e, setSvgContent, setParsedSvg)}
-      />
+
+      <label htmlFor="svg-upload" className="file-label">
+        Upload SVG
+      </label>
+      <input id="svg-upload" type="file" accept=".svg" className="upload-input" onChange={(e) => handleFileUpload(e)} />
+
+      <label htmlFor="logo-upload" className="file-label">
+        Upload Logo Image
+      </label>
+      <input id="logo-upload" type="file" accept="image/*" className="upload-input" onChange={handleLogoUpload} />
+
       <div className="container">
         {svgContent ? <div className="svg-container">{svgContent}</div> : null}
 
@@ -87,7 +103,12 @@ const App: React.FC = () => {
             selected={false} // logic to highlight the selected box will go here
           />
         ))}
+
+        {logos.map(({ id, src }) => (
+          <Logo key={id} id={id} src={src} />
+        ))}
       </div>
+
       <PropertiesPanel parsedSvg={parsedSvg} onColorChange={handleColorChange} />
     </main>
   );

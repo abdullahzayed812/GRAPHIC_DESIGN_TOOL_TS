@@ -14,6 +14,13 @@ interface Textbox {
   };
 }
 
+interface Logo {
+  id: string;
+  src: string;
+  x: number;
+  y: number;
+}
+
 interface TextboxContextProps {
   textboxes: Textbox[];
   selectedTextbox: string | null;
@@ -21,6 +28,9 @@ interface TextboxContextProps {
   selectTextbox: (id: string) => void;
   updateTextboxStyle: (id: string, style: any) => void;
   updateTextboxCoords: (id: string, x: number, y: number) => void;
+  logos: Logo[];
+  addLogo: (src: string) => void;
+  updateLogoCoords: (id: string, x: number, y: number) => void;
 }
 
 const TextboxContext = createContext<TextboxContextProps | undefined>(undefined);
@@ -32,6 +42,7 @@ interface TextboxProviderProps {
 export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) => {
   const [textboxes, setTextboxes] = useState<Textbox[]>([]);
   const [selectedTextbox, setSelectedTextbox] = useState<string | null>(null);
+  const [logos, setLogos] = useState<Logo[]>([]);
 
   const addTextbox = () => {
     const newTextbox: Textbox = {
@@ -62,9 +73,33 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
     setTextboxes((prev) => prev.map((textbox) => (textbox.id === id ? { ...textbox, x, y } : textbox)));
   };
 
+  const addLogo = (src: string) => {
+    const newLogo: Logo = {
+      id: `logo-${logos.length + 1}`,
+      src,
+      x: 100,
+      y: 100,
+    };
+    setLogos((prev) => [...prev, newLogo]);
+  };
+
+  const updateLogoCoords = (id: string, x: number, y: number) => {
+    setLogos((prev) => prev.map((logo) => (logo.id === id ? { ...logo, x, y } : logo)));
+  };
+
   return (
     <TextboxContext.Provider
-      value={{ textboxes, selectedTextbox, addTextbox, selectTextbox, updateTextboxStyle, updateTextboxCoords }}
+      value={{
+        textboxes,
+        selectedTextbox,
+        addTextbox,
+        selectTextbox,
+        updateTextboxStyle,
+        updateTextboxCoords,
+        logos,
+        addLogo,
+        updateLogoCoords,
+      }}
     >
       {children}
     </TextboxContext.Provider>
