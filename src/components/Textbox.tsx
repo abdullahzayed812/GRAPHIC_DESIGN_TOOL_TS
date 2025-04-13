@@ -4,12 +4,10 @@ import { useTextboxContext } from "../context";
 
 interface TextboxProps {
   id: string;
-
   style: any;
-  selected: boolean;
 }
 
-export const Textbox: React.FC<TextboxProps> = ({ id, style, selected }) => {
+export const Textbox: React.FC<TextboxProps> = ({ id, style }) => {
   const [inputValue, setInputValue] = useState(id);
   const { selectTextbox, updateTextboxCoords } = useTextboxContext();
 
@@ -20,9 +18,11 @@ export const Textbox: React.FC<TextboxProps> = ({ id, style, selected }) => {
       id={id}
       value={inputValue}
       type="text"
+      className="draggable-textbox"
       style={{
         borderStyle: style.borderStyle,
         borderColor: style.borderColor,
+        borderRadius: style.borderRadius,
         fontSize: style.fontSize,
         fontFamily: style.fontFamily,
         backgroundColor: style.backgroundColor,

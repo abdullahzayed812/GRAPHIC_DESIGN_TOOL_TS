@@ -101,7 +101,7 @@ const App: React.FC = () => {
         {svgContent && <div className="svg-container">{svgContent}</div>}
 
         {textboxes.map(({ id, x, y, style }) => (
-          <Textbox key={id} id={id} style={style} selected={false} />
+          <Textbox key={id} id={id} style={style} />
         ))}
 
         {logos.map(({ id, src }) => (

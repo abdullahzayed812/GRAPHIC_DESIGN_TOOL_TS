@@ -58,6 +58,14 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ parsedSvg, onC
           />
         </div>
         <div>
+          <label>Border Radius:</label>
+          <input
+            type="number"
+            value={parseInt(selectedTextboxObj.style.borderRadius, 10)}
+            onChange={(e) => handleStyleChange("borderRadius", `${e.target.value}px`)}
+          />
+        </div>
+        <div>
           <label>Font Size:</label>
           <input
             type="number"

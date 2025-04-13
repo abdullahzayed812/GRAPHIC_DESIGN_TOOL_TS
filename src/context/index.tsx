@@ -1,19 +1,22 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 
+interface TextboxStyle {
+  borderStyle: string;
+  borderColor: string;
+  fontSize: string;
+  fontFamily: string;
+  backgroundColor: string;
+  textColor: string;
+  borderRadius: string;
+}
+
 interface Textbox {
   id: string;
   x: number;
   y: number;
   name?: string;
   tag?: string;
-  style: {
-    borderStyle: string;
-    borderColor: string;
-    fontSize: string;
-    fontFamily: string;
-    backgroundColor: string;
-    textColor: string;
-  };
+  style: TextboxStyle;
 }
 
 interface Logo {
@@ -60,6 +63,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
         fontFamily: "Arial",
         backgroundColor: "#FFFFFF",
         textColor: "#000000",
+        borderRadius: "5px",
       },
     };
     setTextboxes((prev) => [...prev, newTextbox]);
