@@ -98,6 +98,15 @@ export const TextboxProperties: React.FC = () => {
       </div>
 
       <div>
+        <label>Padding:</label>
+        <input
+          type="number"
+          value={parseInt(selectedTextboxObj.style.padding || "0", 10)}
+          onChange={(e) => handleStyleChange("padding", `${e.target.value}px`)}
+        />
+      </div>
+
+      <div>
         <label>Background Color:</label>
         <input
           type="color"
