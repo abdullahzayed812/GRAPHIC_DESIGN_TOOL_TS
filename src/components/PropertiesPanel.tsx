@@ -1,15 +1,10 @@
 import React, { useState } from "react";
 import { useTextboxContext } from "../context";
-import { SVGElement } from "../utils/parseSVG";
 import { splitSVGElements } from "../utils/splitSVG";
 
-interface PropertiesPanelProps {
-  parsedSvg: SVGElement[]; // Pass parsed SVG elements to the panel
-  onColorChange: (id: string, color: string) => void;
-}
-
-export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ parsedSvg, onColorChange }) => {
-  const { selectedTextbox, textboxes, updateTextboxStyle, updateTextboxMeta } = useTextboxContext();
+export const PropertiesPanel: React.FC = () => {
+  const { selectedTextbox, parsedSvg, textboxes, updateTextboxStyle, updateTextboxMeta, handleColorChange } =
+    useTextboxContext();
   const [selectedElementId, setSelectedElementId] = useState<string>("");
 
   // Make sure selectedTextbox is not null before proceeding
@@ -32,7 +27,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ parsedSvg, onC
   };
 
   return (
-    <div className="properties-panel">
+    <aside className="properties-panel">
       <h3>Properties Panel</h3>
 
       {/* Textbox properties */}
@@ -146,12 +141,12 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ parsedSvg, onC
             {selectedElementId === shape.id && (
               <div className="color-picker">
                 <label>Fill Color:</label>
-                <input type="color" onChange={(e) => onColorChange(shape.id, e.target.value)} />
+                <input type="color" onChange={(e) => handleColorChange(shape.id, e.target.value)} />
               </div>
             )}
           </div>
         ))}
       </div>
-    </div>
+    </aside>
   );
 };

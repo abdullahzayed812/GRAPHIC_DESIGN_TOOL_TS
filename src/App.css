@@ -1,11 +1,13 @@
 .app-layout {
   display: flex;
+  justify-content: center;
   height: 100vh;
   font-family: "Segoe UI", sans-serif;
+  background-color: #333;
 }
 
 .toolbar {
-  width: 15%;
+  max-width: 300px;
   background-color: #f7f7f7;
   border-right: 1px solid #ddd;
   padding: 20px;
@@ -13,7 +15,20 @@
 
 .toolbar h2 {
   font-size: 18px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.toolbar input[type="number"] {
+  width: 100%;
+  margin-top: 4px;
   margin-bottom: 12px;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 .toolbar-button {
@@ -53,11 +68,15 @@
   display: none;
 }
 
+.container-overlay {
+  height: 100%;
+  background-color: #fff;
+}
+
 .container {
   position: relative;
-  flex: 1;
-  overflow: auto;
-  border-right: 1px solid #ddd;
+  overflow: hidden;
+  border: 1px dashed #f18cde;
   background-color: #ffffff;
 }
 
@@ -95,13 +114,13 @@
   cursor: move;
 }
 
-.properties {
-  width: 20%;
-  background-color: #fafafa;
-  border-left: 1px solid #ddd;
+.properties-panel {
+  max-width: 300px;
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
+  border-left: 1px solid #ddd;
+  background-color: #fafafa;
 }
 
 .properties-panel h3 {
@@ -115,14 +134,14 @@
   border-bottom: 1px solid #333;
 }
 
-.properties input[type="text"] {
+.properties-panel input[type="text"] {
   padding: 10px;
   min-width: 100px;
   border-radius: 10px;
   cursor: pointer;
 }
 
-.properties input[type="text"]:focus {
+.properties-panel input[type="text"]:focus {
   outline: none;
 }
 

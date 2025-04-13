@@ -1,4 +1,4 @@
-- Add border radius props.
+- Add border radius props. (DONE)
 - Add length and width for container.
 - Add font style (underline, bolder, italic).
 - Add color pallet like the old one.
