@@ -23,7 +23,7 @@ interface Branding {
   color: string;
 }
 
-interface Textbox {
+export interface Textbox {
   id: string;
   x: number;
   y: number;
@@ -38,6 +38,8 @@ interface Logo {
   src: string;
   x: number;
   y: number;
+  width: number;
+  height: number;
 }
 
 interface TextboxContextProps {
@@ -62,6 +64,9 @@ interface TextboxContextProps {
     id: string,
     updates: { type?: "primary" | "secondary" | "additional" | "fixed"; color?: string }
   ) => void;
+  updateLogoSize: (id: string, width: number, height: number) => void;
+  selectedLogo: string | null;
+  selectLogo: (id: string) => void;
 }
 
 const TextboxContext = createContext<TextboxContextProps | undefined>(undefined);
@@ -74,6 +79,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
   const [textboxes, setTextboxes] = useState<Textbox[]>([]);
   const [selectedTextbox, setSelectedTextbox] = useState<string | null>(null);
   const [logos, setLogos] = useState<Logo[]>([]);
+  const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<ReactNode | null>(null);
   const [parsedSvg, setParsedSvg] = useState<SVGElement[]>([]);
   const [containerSize, setContainerSize] = useState({ width: "800px", height: "800px" });
@@ -203,12 +209,23 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
       src,
       x: 100,
       y: 100,
+      width: 100,
+      height: 100,
     };
     setLogos((prev) => [...prev, newLogo]);
   };
 
+  const selectLogo = (id: string) => {
+    setSelectedTextbox(null); // Deselect textbox
+    setSelectedLogo(id);
+  };
+
   const updateLogoCoords = (id: string, x: number, y: number) => {
     setLogos((prev) => prev.map((logo) => (logo.id === id ? { ...logo, x, y } : logo)));
+  };
+
+  const updateLogoSize = (id: string, width: number, height: number) => {
+    setLogos((prev) => prev.map((logo) => (logo.id === id ? { ...logo, width, height } : logo)));
   };
 
   const handleContainerSizeChange = (prop: string, value: string) => {
@@ -236,6 +253,9 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
         handleContainerSizeChange,
         containerSize,
         updateTextboxBranding,
+        updateLogoSize,
+        selectedLogo,
+        selectLogo,
       }}
     >
       {children}

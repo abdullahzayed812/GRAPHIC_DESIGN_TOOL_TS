@@ -8,8 +8,22 @@ interface LogoProps {
 }
 
 export const Logo: React.FC<LogoProps> = ({ id, src }) => {
-  const { updateLogoCoords } = useTextboxContext();
+  const { updateLogoCoords, logos, selectLogo, selectedLogo } = useTextboxContext();
+  const logo = logos.find((l) => l.id === id);
+
   useDragger(id, updateLogoCoords);
 
-  return <img id={id} src={src} alt="Logo" className="logo" />;
+  return (
+    <img
+      id={id}
+      src={src}
+      alt="Logo"
+      className={`logo ${selectedLogo === id ? "selected" : ""}`}
+      style={{
+        width: logo?.width,
+        height: logo?.height,
+      }}
+      onClick={() => selectLogo(id)}
+    />
+  );
 };

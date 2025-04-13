@@ -114,6 +114,10 @@
   cursor: move;
 }
 
+.logo.selected {
+  outline: 2px solid #007bff;
+}
+
 .properties-panel {
   max-width: 300px;
   padding: 20px;
