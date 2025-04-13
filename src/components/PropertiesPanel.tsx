@@ -3,8 +3,15 @@ import { useTextboxContext } from "../context";
 import { splitSVGElements } from "../utils/splitSVG";
 
 export const PropertiesPanel: React.FC = () => {
-  const { selectedTextbox, parsedSvg, textboxes, updateTextboxStyle, updateTextboxMeta, handleColorChange } =
-    useTextboxContext();
+  const {
+    selectedTextbox,
+    parsedSvg,
+    textboxes,
+    updateTextboxStyle,
+    updateTextboxMeta,
+    updateTextboxBranding,
+    handleColorChange,
+  } = useTextboxContext();
   const [selectedElementId, setSelectedElementId] = useState<string>("");
 
   // Make sure selectedTextbox is not null before proceeding
@@ -80,6 +87,40 @@ export const PropertiesPanel: React.FC = () => {
             <option value="Verdana">Verdana</option>
           </select>
         </div>
+
+        <div>
+          <label>Font Weight:</label>
+          <select
+            value={selectedTextboxObj.style.fontWeight}
+            onChange={(e) => handleStyleChange("fontWeight", e.target.value)}
+          >
+            <option value="normal">Normal</option>
+            <option value="bold">Bold</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Font Style:</label>
+          <select
+            value={selectedTextboxObj.style.fontStyle}
+            onChange={(e) => handleStyleChange("fontStyle", e.target.value)}
+          >
+            <option value="normal">Normal</option>
+            <option value="italic">Italic</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Text Decoration:</label>
+          <select
+            value={selectedTextboxObj.style.textDecoration}
+            onChange={(e) => handleStyleChange("textDecoration", e.target.value)}
+          >
+            <option value="none">None</option>
+            <option value="underline">Underline</option>
+          </select>
+        </div>
+
         <div>
           <label>Background Color:</label>
           <input
@@ -95,6 +136,19 @@ export const PropertiesPanel: React.FC = () => {
             value={selectedTextboxObj.style.textColor}
             onChange={(e) => handleStyleChange("textColor", e.target.value)}
           />
+        </div>
+
+        <div>
+          <label>Background Opacity:</label>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={selectedTextboxObj.style.backgroundOpacity}
+            onChange={(e) => handleStyleChange("backgroundOpacity", e.target.value)}
+          />
+          <span>{Math.round(+selectedTextboxObj.style.backgroundOpacity * 100)}%</span>
         </div>
 
         <h4>Textbox Metadata</h4>
@@ -115,6 +169,29 @@ export const PropertiesPanel: React.FC = () => {
             placeholder="Enter tag..."
           />
         </div>
+      </div>
+
+      <h4>Branding Mask</h4>
+      <div>
+        <label>Branding Type:</label>
+        <select
+          value={selectedTextboxObj.branding?.type || "primary"}
+          onChange={(e) => updateTextboxBranding(selectedTextboxObj.id, { type: e.target.value as any })}
+        >
+          <option value="primary">Primary</option>
+          <option value="secondary">Secondary</option>
+          <option value="additional">Additional</option>
+          <option value="fixed">Fixed</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Color:</label>
+        <input
+          type="color"
+          value={selectedTextboxObj.branding?.color || "#000000"}
+          onChange={(e) => updateTextboxBranding(selectedTextboxObj.id, { color: e.target.value })}
+        />
       </div>
 
       {/* SVG elements */}

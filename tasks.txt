@@ -1,9 +1,9 @@
 - Add border radius props. (DONE)
-- Add length and width for container.
-- Add font style (underline, bolder, italic).
+- Add length and width for container. (DONE)
+- Add font style (underline, bold, italic) to draggable inputs.
 - Add color pallet like the old one.
 - Add opacity for elements color.
-- Add branding mask (primary, secondary, additional, fixed) for every element takes color         (text-color, text-background, svg shapes, border-color).
+- Add branding mask (primary, secondary, additional, fixed) for every element takes color (text-color, text-background, svg shapes, border-color).
 - Add width, height (resizing) inputs for logos image.
 - Add alignment (horizontal, vertical) for textbox in container.
 - Add padding to elements.

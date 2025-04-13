@@ -8,17 +8,29 @@ interface TextboxStyle {
   fontSize: string;
   fontFamily: string;
   backgroundColor: string;
+  backgroundOpacity: string;
   textColor: string;
   borderRadius: string;
+  fontWeight: "normal" | "bold";
+  fontStyle: "normal" | "italic";
+  textDecoration: "none" | "underline";
+  padding: string;
+  opacity: number;
+}
+
+interface Branding {
+  type: "primary" | "secondary" | "additional" | "fixed";
+  color: string;
 }
 
 interface Textbox {
   id: string;
   x: number;
   y: number;
+  style: TextboxStyle;
+  branding: Branding;
   name?: string;
   tag?: string;
-  style: TextboxStyle;
 }
 
 interface Logo {
@@ -46,6 +58,10 @@ interface TextboxContextProps {
   handleColorChange: (id: string, color: string) => void;
   containerSize: { width: string; height: string };
   handleContainerSizeChange: (prop: string, value: string) => void;
+  updateTextboxBranding: (
+    id: string,
+    updates: { type?: "primary" | "secondary" | "additional" | "fixed"; color?: string }
+  ) => void;
 }
 
 const TextboxContext = createContext<TextboxContextProps | undefined>(undefined);
@@ -60,7 +76,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
   const [logos, setLogos] = useState<Logo[]>([]);
   const [svgContent, setSvgContent] = useState<ReactNode | null>(null);
   const [parsedSvg, setParsedSvg] = useState<SVGElement[]>([]);
-  const [containerSize, setContainerSize] = useState({ width: "800px", height: "" });
+  const [containerSize, setContainerSize] = useState({ width: "800px", height: "800px" });
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -131,15 +147,24 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
       id: `textbox-${textboxes.length + 1}`,
       x: 50,
       y: 50,
-
       style: {
         borderStyle: "solid",
         borderColor: "#000000",
         fontSize: "16px",
         fontFamily: "Arial",
         backgroundColor: "#FFFFFF",
+        backgroundOpacity: "1",
         textColor: "#000000",
         borderRadius: "5px",
+        fontWeight: "normal",
+        fontStyle: "normal",
+        textDecoration: "none",
+        padding: "4px",
+        opacity: 1,
+      },
+      branding: {
+        type: "primary",
+        color: "#000000",
       },
     };
     setTextboxes((prev) => [...prev, newTextbox]);
@@ -159,6 +184,17 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
 
   const updateTextboxMeta = (id: string, updates: { name?: string; tag?: string }) => {
     setTextboxes((prev) => prev.map((textbox) => (textbox.id === id ? { ...textbox, ...updates } : textbox)));
+  };
+
+  const updateTextboxBranding = (
+    id: string,
+    updates: { type?: "primary" | "secondary" | "additional" | "fixed"; color?: string }
+  ) => {
+    setTextboxes((prev) =>
+      prev.map((textbox) =>
+        textbox.id === id ? { ...textbox, branding: { ...textbox.branding, ...updates } } : textbox
+      )
+    );
   };
 
   const addLogo = (src: string) => {
@@ -199,6 +235,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
         parsedSvg,
         handleContainerSizeChange,
         containerSize,
+        updateTextboxBranding,
       }}
     >
       {children}
