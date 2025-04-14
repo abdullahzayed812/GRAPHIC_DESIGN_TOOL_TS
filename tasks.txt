@@ -4,6 +4,12 @@
 - Add opacity for elements color. (DONE)
 - Add branding mask (primary, secondary, additional, fixed) for every element takes color(text-color, text-background, svg shapes, border-color). (DONE)
 - Add width, height (resizing) inputs for logos image. (DONE)
-- Add alignment (horizontal, vertical) for textbox in container.
-- Add padding to elements.
+- Add padding to elements. (DONE)
+
+- Add specific padding (top, left, bottom, right).
 - Add color pallet like the old one.
+- Add alignment (horizontal, vertical) for textbox in container.
+- Add logo label.
+- Add saving for template.
+- Render saved one and can edit.
+- Add clear button to remove element from canvas area.
