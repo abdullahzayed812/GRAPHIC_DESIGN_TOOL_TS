@@ -97,13 +97,26 @@ export const TextboxProperties: React.FC = () => {
         </select>
       </div>
 
-      <div>
-        <label>Padding:</label>
-        <input
-          type="number"
-          value={parseInt(selectedTextboxObj.style.padding || "0", 10)}
-          onChange={(e) => handleStyleChange("padding", `${e.target.value}px`)}
-        />
+      <div className="">
+        <div>
+          <label>Padding:</label>
+        </div>
+        <div className="padding-section">
+          <select
+            value={selectedTextboxObj.style.textDecoration}
+            onChange={(e) => handleStyleChange("textDecoration", e.target.value)}
+          >
+            <option value="top">Top</option>
+            <option value="left">Left</option>
+            <option value="bottom">Bottom</option>
+            <option value="right">Right</option>
+          </select>
+          <input
+            type="number"
+            value={parseInt(selectedTextboxObj.style.padding || "0", 10)}
+            onChange={(e) => handleStyleChange("padding", `${e.target.value}px`)}
+          />
+        </div>
       </div>
 
       <div>

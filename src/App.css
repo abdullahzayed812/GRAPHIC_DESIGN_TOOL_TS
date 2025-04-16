@@ -214,3 +214,8 @@
   font-size: 13px;
   margin-bottom: 4px;
 }
+
+.padding-section {
+  display: flex;
+  align-items: center;
+}
