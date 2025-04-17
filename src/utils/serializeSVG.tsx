@@ -3,7 +3,13 @@ import { SVGElement } from "./parseSVG";
 export function serializeSVG(elements: SVGElement[]): string {
   function serializeElement(element: SVGElement): string {
     const { tag, props, children = [] } = element;
-    const attrs = Object.entries(props)
+
+    const propsWithType = {
+      ...props,
+      type: element.type,
+    };
+
+    const attrs = Object.entries(propsWithType)
       .map(([key, value]) => `${key}="${value}"`)
       .join(" ");
 

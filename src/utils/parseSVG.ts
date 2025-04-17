@@ -6,6 +6,7 @@ export interface SVGElement {
   id: string; // Add an id field
   tag: string;
   props: SVGElementProps;
+  type?: "primary" | "secondary" | "additional" | "fixed";
   children?: SVGElement[];
 }
 
@@ -52,6 +53,7 @@ export function parseSVG(svgString: string | null): SVGElement[] {
       id: `element-${idCounter++}`,
       tag: tagName,
       props,
+      type: "fixed",
       children: [],
     };
 

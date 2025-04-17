@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import { parseSVG, SVGElement } from "../utils/parseSVG";
 import { serializeSVG } from "../utils/serializeSVG";
+import { updateSvgElementBrandingType } from "../utils/addSVGProp";
 
 export interface TextboxStyle {
   borderStyle: string;
@@ -22,8 +23,9 @@ export interface TextboxStyle {
 }
 
 interface Branding {
-  type: "primary" | "secondary" | "additional" | "fixed";
-  color: string;
+  [index: string]: "primary" | "secondary" | "additional" | "fixed";
+  textColorBrandingType: "primary" | "secondary" | "additional" | "fixed";
+  containerColorBrandingType: "primary" | "secondary" | "additional" | "fixed";
 }
 
 export interface Textbox {
@@ -66,7 +68,7 @@ interface TextboxContextProps {
   handleContainerSizeChange: (prop: string, value: string) => void;
   updateTextboxBranding: (
     id: string,
-    updates: { type?: "primary" | "secondary" | "additional" | "fixed"; color?: string }
+    updates: { type: keyof Branding; value: "primary" | "secondary" | "additional" | "fixed" }
   ) => void;
   updateLogoSize: (id: string, width: number, height: number) => void;
   selectedLogo: string | null;
@@ -75,6 +77,7 @@ interface TextboxContextProps {
   saveTemplate: () => void;
   loadTemplate: (e: React.ChangeEvent<HTMLInputElement>) => void;
   clearCanvas: () => void;
+  handleSVGShapeBrandingTypeChange: (id: string, newType: SVGElement["type"]) => void;
 }
 
 const TextboxContext = createContext<TextboxContextProps | undefined>(undefined);
@@ -156,6 +159,10 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
     setSvgContent(<div dangerouslySetInnerHTML={{ __html: updatedSvg }} />);
   };
 
+  const handleSVGShapeBrandingTypeChange = (id: string, newType: SVGElement["type"]) => {
+    setParsedSvg((prevElements) => updateSvgElementBrandingType(prevElements, id, newType));
+  };
+
   const addTextbox = () => {
     const newTextbox: Textbox = {
       id: `textbox-${textboxes.length + 1}`,
@@ -180,8 +187,8 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
         opacity: 1,
       },
       branding: {
-        type: "primary",
-        color: "#000000",
+        textColorBrandingType: "fixed",
+        containerColorBrandingType: "fixed",
       },
     };
     setTextboxes((prev) => [...prev, newTextbox]);
@@ -205,11 +212,11 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
 
   const updateTextboxBranding = (
     id: string,
-    updates: { type?: "primary" | "secondary" | "additional" | "fixed"; color?: string }
+    updates: { type: keyof Branding; value: "primary" | "secondary" | "additional" | "fixed" }
   ) => {
     setTextboxes((prev) =>
-      prev.map((textbox) =>
-        textbox.id === id ? { ...textbox, branding: { ...textbox.branding, ...updates } } : textbox
+      prev.map((textbox: Textbox) =>
+        textbox.id === id ? { ...textbox, branding: { ...textbox.branding, [updates.type]: updates.value } } : textbox
       )
     );
   };
@@ -253,7 +260,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
       textboxes,
       logos,
       containerSize,
-      svg: parsedSvg,
+      svg: serializeSVG(parsedSvg),
     };
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(template, null, 2));
     const downloadAnchorNode = document.createElement("a");
@@ -315,6 +322,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
         saveTemplate,
         loadTemplate,
         clearCanvas,
+        handleSVGShapeBrandingTypeChange,
       }}
     >
       {children}

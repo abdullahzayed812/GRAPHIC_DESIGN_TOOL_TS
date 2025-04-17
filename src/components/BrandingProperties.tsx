@@ -13,10 +13,15 @@ export const BrandingProperties: React.FC = () => {
     <div>
       <h4>Branding Mask</h4>
       <div>
-        <label>Branding Type:</label>
+        <label>Text Color:</label>
         <select
-          value={selectedTextboxObj.branding?.type || "primary"}
-          onChange={(e) => updateTextboxBranding(selectedTextboxObj.id, { type: e.target.value as any })}
+          value={selectedTextboxObj.branding.textColorBrandingType}
+          onChange={(e) =>
+            updateTextboxBranding(selectedTextboxObj.id, {
+              type: "textColorBrandingType",
+              value: e.target.value as "primary" | "secondary" | "additional" | "fixed",
+            })
+          }
         >
           <option value="primary">Primary</option>
           <option value="secondary">Secondary</option>
@@ -24,13 +29,23 @@ export const BrandingProperties: React.FC = () => {
           <option value="fixed">Fixed</option>
         </select>
       </div>
+
       <div>
-        <label>Color:</label>
-        <input
-          type="color"
-          value={selectedTextboxObj.branding?.color || "#000000"}
-          onChange={(e) => updateTextboxBranding(selectedTextboxObj.id, { color: e.target.value })}
-        />
+        <label>Background:</label>
+        <select
+          value={selectedTextboxObj.branding.containerColorBrandingType}
+          onChange={(e) =>
+            updateTextboxBranding(selectedTextboxObj.id, {
+              type: "containerColorBrandingType",
+              value: e.target.value as "primary" | "secondary" | "additional" | "fixed",
+            })
+          }
+        >
+          <option value="primary">Primary</option>
+          <option value="secondary">Secondary</option>
+          <option value="additional">Additional</option>
+          <option value="fixed">Fixed</option>
+        </select>
       </div>
     </div>
   );
