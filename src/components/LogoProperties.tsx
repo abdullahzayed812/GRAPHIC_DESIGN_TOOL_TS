@@ -1,7 +1,7 @@
 import { useTextboxContext } from "../context";
 
 export const LogoProperties: React.FC = () => {
-  const { logos, selectedLogo, updateLogoSize } = useTextboxContext();
+  const { logos, selectedLogo, updateLogoSize, updateLogoMeta } = useTextboxContext();
 
   if (!selectedLogo) return null;
 
@@ -25,6 +25,16 @@ export const LogoProperties: React.FC = () => {
           type="number"
           value={logo.height ?? 100}
           onChange={(e) => updateLogoSize(logo.id, logo.width ?? 100, parseInt(e.target.value))}
+        />
+      </div>
+
+      <div>
+        <label>Logo Label:</label>
+        <input
+          type="text"
+          value={logo.label || ""}
+          onChange={(e) => updateLogoMeta(logo.id, { label: e.target.value })}
+          placeholder="Enter label"
         />
       </div>
     </div>

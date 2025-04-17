@@ -1,6 +1,9 @@
 import { useRef, useEffect } from "react";
+import { useTextboxContext } from "../context";
 
-export function useDragger(id: string, updateCoords: (id: string, x: number, y: number) => void): void {
+export function useDragger(id: string): void {
+  const { updateTextboxCoords } = useTextboxContext();
+
   const isClicked = useRef<boolean>(false);
 
   const coords = useRef<{
@@ -40,7 +43,7 @@ export function useDragger(id: string, updateCoords: (id: string, x: number, y: 
       coords.current.lastY = target.offsetTop;
 
       // Update the parent component with new coordinates
-      updateCoords(id, coords.current.lastX, coords.current.lastY);
+      updateTextboxCoords(id, coords.current.lastX, coords.current.lastY);
     };
 
     const onMouseMove = (e: MouseEvent) => {
@@ -70,5 +73,5 @@ export function useDragger(id: string, updateCoords: (id: string, x: number, y: 
     };
 
     return cleanup;
-  }, [id, updateCoords]);
+  }, [id, updateTextboxCoords]);
 }

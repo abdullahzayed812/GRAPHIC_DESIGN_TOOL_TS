@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useDragger } from "../hooks/useDragger";
-import { useTextboxContext } from "../context";
+import { TextboxStyle, useTextboxContext } from "../context";
 
 interface TextboxProps {
   id: string;
-  style: any;
+  style: TextboxStyle;
+  x: number;
+  y: number;
 }
 
 function hexToRGBA(hex: string, opacity: number): string {
@@ -14,30 +16,35 @@ function hexToRGBA(hex: string, opacity: number): string {
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
-export const Textbox: React.FC<TextboxProps> = ({ id, style }) => {
+export const Textbox: React.FC<TextboxProps> = ({ id, style, x, y }) => {
   const [inputValue, setInputValue] = useState(id);
-  const { selectTextbox, updateTextboxCoords } = useTextboxContext();
+  const { selectTextbox, selectedTextbox } = useTextboxContext();
 
-  useDragger(id, updateTextboxCoords);
+  useDragger(id);
 
   return (
     <input
       id={id}
       value={inputValue}
       type="text"
-      className="draggable-textbox"
+      className={`${selectedTextbox === id ? "selected" : ""}`}
       style={{
+        left: x,
+        top: y,
         borderStyle: style.borderStyle,
         borderColor: style.borderColor,
         borderRadius: style.borderRadius,
         fontSize: style.fontSize,
         fontFamily: style.fontFamily,
-        backgroundColor: hexToRGBA(style.backgroundColor, style.backgroundOpacity),
+        backgroundColor: hexToRGBA(style.backgroundColor, +style.backgroundOpacity),
         color: style.textColor,
         fontWeight: style.fontWeight,
         fontStyle: style.fontStyle,
         textDecoration: style.textDecoration,
-        padding: style.padding,
+        paddingTop: style.paddingTop,
+        paddingLeft: style.paddingLeft,
+        paddingBottom: style.paddingBottom,
+        paddingRight: style.paddingRight,
         opacity: style.opacity,
         width: `${inputValue.length + 1}ch`,
       }}

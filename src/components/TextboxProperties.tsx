@@ -1,7 +1,8 @@
 import { Textbox, useTextboxContext } from "../context";
 
 export const TextboxProperties: React.FC = () => {
-  const { textboxes, selectedTextbox, updateTextboxStyle, updateTextboxMeta } = useTextboxContext();
+  const { textboxes, selectedTextbox, updateTextboxStyle, updateTextboxMeta, updateTextboxCoords, containerSize } =
+    useTextboxContext();
 
   if (!selectedTextbox) return null;
 
@@ -97,26 +98,89 @@ export const TextboxProperties: React.FC = () => {
         </select>
       </div>
 
-      <div className="">
-        <div>
-          <label>Padding:</label>
-        </div>
-        <div className="padding-section">
-          <select
-            value={selectedTextboxObj.style.textDecoration}
-            onChange={(e) => handleStyleChange("textDecoration", e.target.value)}
-          >
-            <option value="top">Top</option>
-            <option value="left">Left</option>
-            <option value="bottom">Bottom</option>
-            <option value="right">Right</option>
-          </select>
-          <input
-            type="number"
-            value={parseInt(selectedTextboxObj.style.padding || "0", 10)}
-            onChange={(e) => handleStyleChange("padding", `${e.target.value}px`)}
-          />
-        </div>
+      <div>
+        <label>Padding Top:</label>
+        <input
+          type="number"
+          value={parseInt(selectedTextboxObj.style.paddingTop, 10)}
+          onChange={(e) => handleStyleChange("paddingTop", `${e.target.value}px`)}
+        />
+      </div>
+      <div>
+        <label>Padding Left:</label>
+        <input
+          type="number"
+          value={parseInt(selectedTextboxObj.style.paddingLeft, 10)}
+          onChange={(e) => handleStyleChange("paddingLeft", `${e.target.value}px`)}
+        />
+      </div>
+      <div>
+        <label>Padding Bottom:</label>
+        <input
+          type="number"
+          value={parseInt(selectedTextboxObj.style.paddingBottom, 10)}
+          onChange={(e) => handleStyleChange("paddingBottom", `${e.target.value}px`)}
+        />
+      </div>
+      <div>
+        <label>Padding Right:</label>
+        <input
+          type="number"
+          value={parseInt(selectedTextboxObj.style.paddingRight, 10)}
+          onChange={(e) => handleStyleChange("paddingRight", `${e.target.value}px`)}
+        />
+      </div>
+
+      <h4>Alignment</h4>
+      <div>
+        <label>Horizontal Align:</label>
+        <select
+          onChange={(e) => {
+            const containerWidth = parseInt(containerSize.width, 10);
+            const textboxWidth = 150;
+            const value = e.target.value;
+
+            let x = selectedTextboxObj.x;
+            if (value === "left") x = 0;
+            else if (value === "center") x = containerWidth / 2 - textboxWidth / 2;
+            else if (value === "right") x = containerWidth - textboxWidth;
+
+            updateTextboxCoords(selectedTextboxObj.id, x, selectedTextboxObj.y);
+          }}
+          defaultValue=""
+        >
+          <option value="" disabled>
+            Select
+          </option>
+          <option value="left">Left</option>
+          <option value="center">Center</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+      <div>
+        <label>Vertical Align:</label>
+        <select
+          onChange={(e) => {
+            const containerHeight = parseInt(containerSize.height, 10);
+            const textboxHeight = 40; // Approximate or calculate dynamically
+            const value = e.target.value;
+
+            let y = selectedTextboxObj.y;
+            if (value === "top") y = 0;
+            else if (value === "center") y = containerHeight / 2 - textboxHeight / 2;
+            else if (value === "bottom") y = containerHeight - textboxHeight;
+
+            updateTextboxCoords(selectedTextboxObj.id, selectedTextboxObj.x, y);
+          }}
+          defaultValue=""
+        >
+          <option value="" disabled>
+            Select
+          </option>
+          <option value="top">Top</option>
+          <option value="center">Center</option>
+          <option value="bottom">Bottom</option>
+        </select>
       </div>
 
       <div>

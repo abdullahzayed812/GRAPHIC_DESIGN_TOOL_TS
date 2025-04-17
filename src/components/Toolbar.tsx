@@ -1,8 +1,16 @@
 import { useTextboxContext } from "../context";
 
 export const Toolbar: React.FC = () => {
-  const { containerSize, handleContainerSizeChange, addTextbox, handleFileUpload, handleLogoUpload } =
-    useTextboxContext();
+  const {
+    containerSize,
+    handleContainerSizeChange,
+    addTextbox,
+    handleFileUpload,
+    handleLogoUpload,
+    saveTemplate,
+    clearCanvas,
+    loadTemplate,
+  } = useTextboxContext();
 
   return (
     <aside className="toolbar">
@@ -20,6 +28,19 @@ export const Toolbar: React.FC = () => {
         Upload Logo
       </label>
       <input id="logo-upload" type="file" accept="image/*" className="upload-input" onChange={handleLogoUpload} />
+
+      <label htmlFor="load-template" className="file-label">
+        Load Template
+      </label>
+      <input id="load-template" type="file" accept=".json" className="upload-input" onChange={loadTemplate} />
+
+      <button onClick={saveTemplate} className="toolbar-button">
+        Save Template
+      </button>
+      <button onClick={clearCanvas} className="toolbar-button">
+        Clear Canvas
+      </button>
+
       <h2>Canvas Width & Height</h2>
       <div>
         <label>Width:</label>

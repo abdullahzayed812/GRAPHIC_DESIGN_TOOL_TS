@@ -11,7 +11,7 @@ export const CanvasArea = () => {
         {svgContent && <div className="svg-container">{svgContent}</div>}
 
         {textboxes.map(({ id, x, y, style }) => (
-          <Textbox key={id} id={id} style={style} />
+          <Textbox key={id} id={id} style={style} x={x} y={y} />
         ))}
 
         {logos.map(({ id, src }) => (

@@ -95,7 +95,7 @@
 }
 
 .container input[type="text"].selected {
-  border: 2px solid #f18cde;
+  box-shadow: 3px 3px 10px #007bff, -3px -3px 10px #007bff;
 }
 
 .svg-container {

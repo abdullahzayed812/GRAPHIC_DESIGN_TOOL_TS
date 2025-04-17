@@ -6,10 +6,9 @@
 - Add width, height (resizing) inputs for logos image. (DONE)
 - Add padding to elements. (DONE)
 
-- Add specific padding (top, left, bottom, right).
-- Add color pallet like the old one.
-- Add alignment (horizontal, vertical) for textbox in container.
-- Add logo label.
-- Add saving for template.
+- Add specific padding position (top, left, bottom, right). (DONE)
+- Add logo label. (DONE)
+- Add alignment (horizontal, vertical) for textbox in container. (DONE)
+- Add saving for template. (DONE)
+- Add clear button to remove element from canvas area. (DONE)
 - Render saved one and can edit.
-- Add clear button to remove element from canvas area.

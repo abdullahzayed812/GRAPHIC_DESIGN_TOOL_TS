@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useState } from "react";
 import { parseSVG, SVGElement } from "../utils/parseSVG";
 import { serializeSVG } from "../utils/serializeSVG";
 
-interface TextboxStyle {
+export interface TextboxStyle {
   borderStyle: string;
   borderColor: string;
   fontSize: string;
@@ -14,7 +14,10 @@ interface TextboxStyle {
   fontWeight: "normal" | "bold";
   fontStyle: "normal" | "italic";
   textDecoration: "none" | "underline";
-  padding: string;
+  paddingTop: string;
+  paddingLeft: string;
+  paddingRight: string;
+  paddingBottom: string;
   opacity: number;
 }
 
@@ -40,6 +43,7 @@ interface Logo {
   y: number;
   width: number;
   height: number;
+  label: string;
 }
 
 interface TextboxContextProps {
@@ -67,6 +71,10 @@ interface TextboxContextProps {
   updateLogoSize: (id: string, width: number, height: number) => void;
   selectedLogo: string | null;
   selectLogo: (id: string) => void;
+  updateLogoMeta: (id: string, updates: { label?: string }) => void;
+  saveTemplate: () => void;
+  loadTemplate: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  clearCanvas: () => void;
 }
 
 const TextboxContext = createContext<TextboxContextProps | undefined>(undefined);
@@ -165,7 +173,10 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
         fontWeight: "normal",
         fontStyle: "normal",
         textDecoration: "none",
-        padding: "4px",
+        paddingTop: "2px",
+        paddingLeft: "2px",
+        paddingBottom: "2px",
+        paddingRight: "2px",
         opacity: 1,
       },
       branding: {
@@ -211,6 +222,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
       y: 100,
       width: 100,
       height: 100,
+      label: "",
     };
     setLogos((prev) => [...prev, newLogo]);
   };
@@ -228,8 +240,51 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
     setLogos((prev) => prev.map((logo) => (logo.id === id ? { ...logo, width, height } : logo)));
   };
 
+  const updateLogoMeta = (id: string, updates: { label?: string }) => {
+    setLogos((prev) => prev.map((logo) => (logo.id === id ? { ...logo, ...updates } : logo)));
+  };
+
   const handleContainerSizeChange = (prop: string, value: string) => {
     setContainerSize((prev) => ({ ...prev, [prop]: value }));
+  };
+
+  const saveTemplate = () => {
+    const template = {
+      textboxes,
+      logos,
+      containerSize,
+      svg: parsedSvg,
+    };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(template, null, 2));
+    const downloadAnchorNode = document.createElement("a");
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "template.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const loadTemplate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const loaded = JSON.parse(event.target?.result as string);
+      setTextboxes(loaded.textboxes);
+      setLogos(loaded.logos);
+      setContainerSize(loaded.containerSize);
+      setParsedSvg(loaded.svg);
+      setSvgContent(<div dangerouslySetInnerHTML={{ __html: serializeSVG(loaded.svg) }} />);
+    };
+    reader.readAsText(file);
+  };
+
+  const clearCanvas = () => {
+    setTextboxes([]);
+    setLogos([]);
+    setSvgContent(null);
+    setParsedSvg([]);
   };
 
   return (
@@ -256,6 +311,10 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
         updateLogoSize,
         selectedLogo,
         selectLogo,
+        updateLogoMeta,
+        saveTemplate,
+        loadTemplate,
+        clearCanvas,
       }}
     >
       {children}
