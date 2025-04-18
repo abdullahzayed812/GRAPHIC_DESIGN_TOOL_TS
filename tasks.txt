@@ -12,3 +12,9 @@
 - Add saving for template. (DONE)
 - Add clear button to remove element from canvas area. (DONE)
 - Render saved one and can edit.
+
+- Add coords to logo.
+- Test complex shapes.
+- Alignment textbox based to container size.
+- Percentage function (textbox, logo).
+- Test all values exported in json file.

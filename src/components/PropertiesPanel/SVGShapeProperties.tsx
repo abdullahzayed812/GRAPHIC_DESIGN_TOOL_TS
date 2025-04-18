@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useTextboxContext } from "../context";
-import { ChevronDown, ChevronRight, Type, Square, Circle, Image } from "lucide-react";
+import { useTextboxContext } from "../../context";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 export const SVGShapeProperties: React.FC = () => {
   const { parsedSvg, handleColorChange, handleSVGShapeBrandingTypeChange } = useTextboxContext();
@@ -23,26 +23,6 @@ export const SVGShapeProperties: React.FC = () => {
   const handleSelect = (id: string) => {
     setSelectedElementId(id);
   };
-
-  // Get appropriate icon for element type
-  // const getElementIcon = (tag: string) => {
-  //   switch (tag.toLowerCase()) {
-  //     case "circle":
-  //     case "ellipse":
-  //       return <Circle size={16} />;
-  //     case "rect":
-  //     case "polygon":
-  //     case "path":
-  //       return <Square size={16} />;
-  //     case "text":
-  //     case "tspan":
-  //       return <Type size={16} />;
-  //     case "image":
-  //       return <Image size={16} />;
-  //     default:
-  //       return null;
-  //   }
-  // };
 
   // Simplify ID for display
   const formatId = (id: string) => {
@@ -83,10 +63,6 @@ export const SVGShapeProperties: React.FC = () => {
             )}
 
             <input type="radio" name="svg-shape" checked={isSelected} onChange={() => handleSelect(element.id)} />
-
-            {/* <div className="shape-preview" style={{ width: "20px", height: "20px" }}>
-              {getElementIcon(element.tag)}
-            </div> */}
 
             <span>
               <strong>{element.tag}</strong>

@@ -1,4 +1,4 @@
-import { useTextboxContext } from "../context";
+import { useTextboxContext } from "../../context";
 
 export const BrandingProperties: React.FC = () => {
   const { textboxes, selectedTextbox, updateTextboxBranding } = useTextboxContext();

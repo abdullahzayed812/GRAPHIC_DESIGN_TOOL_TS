@@ -1,6 +1,6 @@
-import { useTextboxContext } from "../context";
-import { Textbox } from "./Textbox";
-import { Logo } from "./Logo";
+import { useTextboxContext } from "../../context";
+import { Textbox } from "../Textbox";
+import { Logo } from "../Logo";
 
 export const CanvasArea = () => {
   const { containerSize, textboxes, svgContent, logos } = useTextboxContext();

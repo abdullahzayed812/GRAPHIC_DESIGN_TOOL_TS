@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useDragger } from "../hooks/useDragger";
-import { TextboxStyle, useTextboxContext } from "../context";
+import { useDragger } from "../../hooks/useDragger";
+import { useTextboxContext } from "../../context";
+import { TextboxStyle } from "../../models/Textbox";
 
 interface TextboxProps {
   id: string;

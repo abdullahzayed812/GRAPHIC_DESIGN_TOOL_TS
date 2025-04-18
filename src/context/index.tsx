@@ -1,52 +1,10 @@
-import { createContext, ReactNode, useContext, useState } from "react";
-import { parseSVG, SVGElement } from "../utils/parseSVG";
-import { serializeSVG } from "../utils/serializeSVG";
-import { updateSvgElementBrandingType } from "../utils/addSVGProp";
-
-export interface TextboxStyle {
-  borderStyle: string;
-  borderColor: string;
-  fontSize: string;
-  fontFamily: string;
-  backgroundColor: string;
-  backgroundOpacity: string;
-  textColor: string;
-  borderRadius: string;
-  fontWeight: "normal" | "bold";
-  fontStyle: "normal" | "italic";
-  textDecoration: "none" | "underline";
-  paddingTop: string;
-  paddingLeft: string;
-  paddingRight: string;
-  paddingBottom: string;
-  opacity: number;
-}
-
-interface Branding {
-  [index: string]: "primary" | "secondary" | "additional" | "fixed";
-  textColorBrandingType: "primary" | "secondary" | "additional" | "fixed";
-  containerColorBrandingType: "primary" | "secondary" | "additional" | "fixed";
-}
-
-export interface Textbox {
-  id: string;
-  x: number;
-  y: number;
-  style: TextboxStyle;
-  branding: Branding;
-  name?: string;
-  tag?: string;
-}
-
-interface Logo {
-  id: string;
-  src: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  label: string;
-}
+import { createContext, ReactNode, useContext, useState, useMemo, useCallback } from "react";
+import { TextboxManager, Textbox, Branding } from "../models/Textbox";
+import { LogoManager, Logo } from "../models/Logo";
+import { SVGService } from "../services/SVGService";
+import { FileService } from "../services/FileService";
+import { useFileUpload } from "../hooks/useFileUpload";
+import { SVGElement } from "../utils/parseSVG";
 
 interface TextboxContextProps {
   textboxes: Textbox[];
@@ -87,247 +45,187 @@ interface TextboxProviderProps {
 }
 
 export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) => {
-  const [textboxes, setTextboxes] = useState<Textbox[]>([]);
-  const [selectedTextbox, setSelectedTextbox] = useState<string | null>(null);
-  const [logos, setLogos] = useState<Logo[]>([]);
-  const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
-  const [svgContent, setSvgContent] = useState<ReactNode | null>(null);
-  const [parsedSvg, setParsedSvg] = useState<SVGElement[]>([]);
+  // Initialize services
+  const textboxManager = useMemo(() => new TextboxManager(), []);
+  const logoManager = useMemo(() => new LogoManager(), []);
+  const svgService = useMemo(() => new SVGService(), []);
   const [containerSize, setContainerSize] = useState({ width: "800px", height: "1080px" });
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (file && file.type === "image/svg+xml") {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const svgContent = reader.result as string;
-
-        const parsedElements = parseSVG(svgContent);
-        setParsedSvg(parsedElements);
-
-        const updatedSvg = serializeSVG(parsedElements);
-        setSvgContent(<div dangerouslySetInnerHTML={{ __html: updatedSvg }} />);
-      };
-      reader.readAsText(file);
-    } else {
-      alert("Please upload an SVG file.");
-    }
-  };
-
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const imageUrl = reader.result as string;
-        addLogo(imageUrl);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      alert("Please upload an image file.");
-    }
-  };
-
-  const handleColorChange = (id: string, color: string) => {
-    const updateElementColor = (element: SVGElement): SVGElement => {
-      // Check if this element is the one we're updating
-      if (element.id === id) {
-        // Update the color (fill) of the element
-        element.props["fill"] = color;
-      }
-
-      // If the element has children, recursively update their color as well
-      if (element.children && element.children.length > 0) {
-        element.children = element.children.map(updateElementColor); // Recursively apply to children
-      }
-
-      return element;
-    };
-
-    // Map over the parsed SVG to update each element (including nested ones)
-    const updatedElements = parsedSvg.map(updateElementColor);
-
-    // Serialize the updated SVG elements to string
-    const updatedSvg = serializeSVG(updatedElements);
-
-    // Log the changes (for debugging)
-    console.log({ id, color, updatedElements });
-
-    // Update state with the modified SVG elements and the new content to render
-    setParsedSvg(updatedElements);
-    setSvgContent(<div dangerouslySetInnerHTML={{ __html: updatedSvg }} />);
-  };
-
-  const handleSVGShapeBrandingTypeChange = (id: string, newType: SVGElement["type"]) => {
-    setParsedSvg((prevElements) => updateSvgElementBrandingType(prevElements, id, newType));
-  };
-
-  const addTextbox = () => {
-    const newTextbox: Textbox = {
-      id: `textbox-${textboxes.length + 1}`,
-      x: 50,
-      y: 50,
-      style: {
-        borderStyle: "solid",
-        borderColor: "#000000",
-        fontSize: "16px",
-        fontFamily: "Arial",
-        backgroundColor: "#FFFFFF",
-        backgroundOpacity: "1",
-        textColor: "#000000",
-        borderRadius: "5px",
-        fontWeight: "normal",
-        fontStyle: "normal",
-        textDecoration: "none",
-        paddingTop: "2px",
-        paddingLeft: "2px",
-        paddingBottom: "2px",
-        paddingRight: "2px",
-        opacity: 1,
-      },
-      branding: {
-        textColorBrandingType: "fixed",
-        containerColorBrandingType: "fixed",
-      },
-    };
-    setTextboxes((prev) => [...prev, newTextbox]);
-  };
-
-  const selectTextbox = (id: string) => {
-    setSelectedTextbox(id);
-  };
-
-  const updateTextboxStyle = (id: string, style: any) => {
-    setTextboxes((prev) => prev.map((textbox) => (textbox.id === id ? { ...textbox, style } : textbox)));
-  };
-
-  const updateTextboxCoords = (id: string, x: number, y: number) => {
-    setTextboxes((prev) => prev.map((textbox) => (textbox.id === id ? { ...textbox, x, y } : textbox)));
-  };
-
-  const updateTextboxMeta = (id: string, updates: { name?: string; tag?: string }) => {
-    setTextboxes((prev) => prev.map((textbox) => (textbox.id === id ? { ...textbox, ...updates } : textbox)));
-  };
-
-  const updateTextboxBranding = (
-    id: string,
-    updates: { type: keyof Branding; value: "primary" | "secondary" | "additional" | "fixed" }
-  ) => {
-    setTextboxes((prev) =>
-      prev.map((textbox: Textbox) =>
-        textbox.id === id ? { ...textbox, branding: { ...textbox.branding, [updates.type]: updates.value } } : textbox
-      )
-    );
-  };
-
-  const addLogo = (src: string) => {
-    const newLogo: Logo = {
-      id: `logo-${logos.length + 1}`,
-      src,
-      x: 100,
-      y: 100,
-      width: 100,
-      height: 100,
-      label: "",
-    };
-    setLogos((prev) => [...prev, newLogo]);
-  };
-
-  const selectLogo = (id: string) => {
-    setSelectedTextbox(null); // Deselect textbox
-    setSelectedLogo(id);
-  };
-
-  const updateLogoCoords = (id: string, x: number, y: number) => {
-    setLogos((prev) => prev.map((logo) => (logo.id === id ? { ...logo, x, y } : logo)));
-  };
-
-  const updateLogoSize = (id: string, width: number, height: number) => {
-    setLogos((prev) => prev.map((logo) => (logo.id === id ? { ...logo, width, height } : logo)));
-  };
-
-  const updateLogoMeta = (id: string, updates: { label?: string }) => {
-    setLogos((prev) => prev.map((logo) => (logo.id === id ? { ...logo, ...updates } : logo)));
-  };
-
-  const handleContainerSizeChange = (prop: string, value: string) => {
-    setContainerSize((prev) => ({ ...prev, [prop]: value }));
-  };
-
-  const saveTemplate = () => {
-    const template = {
-      textboxes,
-      logos,
-      containerSize,
-      svg: serializeSVG(parsedSvg),
-    };
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(template, null, 2));
-    const downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "template.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  };
-
-  const loadTemplate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const loaded = JSON.parse(event.target?.result as string);
-      setTextboxes(loaded.textboxes);
-      setLogos(loaded.logos);
-      setContainerSize(loaded.containerSize);
-      setParsedSvg(loaded.svg);
-      setSvgContent(<div dangerouslySetInnerHTML={{ __html: serializeSVG(loaded.svg) }} />);
-    };
-    reader.readAsText(file);
-  };
-
-  const clearCanvas = () => {
-    setTextboxes([]);
-    setLogos([]);
-    setSvgContent(null);
-    setParsedSvg([]);
-  };
-
-  return (
-    <TextboxContext.Provider
-      value={{
-        textboxes,
-        svgContent,
-        selectedTextbox,
-        addTextbox,
-        selectTextbox,
-        updateTextboxStyle,
-        updateTextboxCoords,
-        logos,
-        addLogo,
-        updateLogoCoords,
-        updateTextboxMeta,
-        handleColorChange,
-        handleFileUpload,
-        handleLogoUpload,
-        parsedSvg,
-        handleContainerSizeChange,
-        containerSize,
-        updateTextboxBranding,
-        updateLogoSize,
-        selectedLogo,
-        selectLogo,
-        updateLogoMeta,
-        saveTemplate,
-        loadTemplate,
-        clearCanvas,
-        handleSVGShapeBrandingTypeChange,
-      }}
-    >
-      {children}
-    </TextboxContext.Provider>
+  const fileService = useMemo(
+    () => new FileService(textboxManager, logoManager, svgService, containerSize),
+    [textboxManager, logoManager, svgService, containerSize]
   );
+
+  // State to trigger re-renders
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  // Force re-render when needed
+  const triggerUpdate = useCallback(() => {
+    setForceUpdate((prev) => prev + 1);
+  }, []);
+
+  // File upload hooks
+  const { handleSVGUpload, handleLogoUpload, handleTemplateUpload } = useFileUpload(
+    svgService,
+    logoManager,
+    fileService,
+    triggerUpdate
+  );
+
+  // Methods that require state updates
+  const addTextbox = useCallback(() => {
+    textboxManager.add();
+    triggerUpdate();
+  }, [textboxManager, triggerUpdate]);
+
+  const selectTextbox = useCallback(
+    (id: string) => {
+      textboxManager.select(id);
+      logoManager.deselect();
+      triggerUpdate();
+    },
+    [textboxManager, logoManager, triggerUpdate]
+  );
+
+  const updateTextboxStyle = useCallback(
+    (id: string, style: any) => {
+      textboxManager.updateStyle(id, style);
+      triggerUpdate();
+    },
+    [textboxManager, triggerUpdate]
+  );
+
+  const updateTextboxCoords = useCallback(
+    (id: string, x: number, y: number) => {
+      textboxManager.updateCoords(id, x, y);
+      triggerUpdate();
+    },
+    [textboxManager, triggerUpdate]
+  );
+
+  const updateTextboxMeta = useCallback(
+    (id: string, updates: { name?: string; tag?: string }) => {
+      textboxManager.updateMeta(id, updates);
+      triggerUpdate();
+    },
+    [textboxManager, triggerUpdate]
+  );
+
+  const updateTextboxBranding = useCallback(
+    (id: string, updates: { type: keyof Branding; value: "primary" | "secondary" | "additional" | "fixed" }) => {
+      textboxManager.updateBranding(id, updates);
+      triggerUpdate();
+    },
+    [textboxManager, triggerUpdate]
+  );
+
+  const addLogo = useCallback(
+    (src: string) => {
+      logoManager.add(src);
+      triggerUpdate();
+    },
+    [logoManager, triggerUpdate]
+  );
+
+  const selectLogo = useCallback(
+    (id: string) => {
+      logoManager.select(id);
+      textboxManager.deselect();
+      triggerUpdate();
+    },
+    [logoManager, textboxManager, triggerUpdate]
+  );
+
+  const updateLogoCoords = useCallback(
+    (id: string, x: number, y: number) => {
+      logoManager.updateCoords(id, x, y);
+      triggerUpdate();
+    },
+    [logoManager, triggerUpdate]
+  );
+
+  const updateLogoSize = useCallback(
+    (id: string, width: number, height: number) => {
+      logoManager.updateSize(id, width, height);
+      triggerUpdate();
+    },
+    [logoManager, triggerUpdate]
+  );
+
+  const updateLogoMeta = useCallback(
+    (id: string, updates: { label?: string }) => {
+      logoManager.updateMeta(id, updates);
+      triggerUpdate();
+    },
+    [logoManager, triggerUpdate]
+  );
+
+  const handleColorChange = useCallback(
+    (id: string, color: string) => {
+      svgService.updateElementColor(id, color);
+      triggerUpdate();
+    },
+    [svgService, triggerUpdate]
+  );
+
+  const handleSVGShapeBrandingTypeChange = useCallback(
+    (id: string, newType: SVGElement["type"]) => {
+      svgService.updateBrandingType(id, newType);
+      triggerUpdate();
+    },
+    [svgService, triggerUpdate]
+  );
+
+  const handleContainerSizeChange = useCallback(
+    (prop: string, value: string) => {
+      fileService.setContainerSize(prop, value);
+      setContainerSize(fileService.getContainerSize());
+    },
+    [fileService]
+  );
+
+  const saveTemplate = useCallback(() => {
+    fileService.saveTemplate();
+  }, [fileService]);
+
+  const clearCanvas = useCallback(() => {
+    textboxManager.clear();
+    logoManager.clear();
+    svgService.clear();
+    triggerUpdate();
+  }, [textboxManager, logoManager, svgService, triggerUpdate]);
+
+  // Provide context
+  const contextValue: TextboxContextProps = {
+    textboxes: textboxManager.getAll(),
+    svgContent: svgService.getSvgContentNode(),
+    parsedSvg: svgService.getParsedElements(),
+    selectedTextbox: textboxManager.getSelected(),
+    addTextbox,
+    selectTextbox,
+    updateTextboxStyle,
+    updateTextboxCoords,
+    logos: logoManager.getAll(),
+    addLogo,
+    updateLogoCoords,
+    updateTextboxMeta,
+    handleColorChange,
+    handleFileUpload: handleSVGUpload,
+    handleLogoUpload,
+    containerSize,
+    handleContainerSizeChange,
+    updateTextboxBranding,
+    updateLogoSize,
+    selectedLogo: logoManager.getSelected(),
+    selectLogo,
+    updateLogoMeta,
+    saveTemplate,
+    loadTemplate: handleTemplateUpload,
+    clearCanvas,
+    handleSVGShapeBrandingTypeChange,
+  };
+
+  return <TextboxContext.Provider value={contextValue}>{children}</TextboxContext.Provider>;
 };
 
 export const useTextboxContext = () => {

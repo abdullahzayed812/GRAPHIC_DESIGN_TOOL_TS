@@ -1,6 +1,6 @@
 import React from "react";
-import { useDragger } from "../hooks/useDragger";
-import { useTextboxContext } from "../context";
+import { useDragger } from "../../hooks/useDragger";
+import { useTextboxContext } from "../../context";
 
 interface LogoProps {
   id: string;
@@ -22,6 +22,8 @@ export const Logo: React.FC<LogoProps> = ({ id, src }) => {
       style={{
         width: logo?.width,
         height: logo?.height,
+        top: logo?.x,
+        left: logo?.y,
       }}
       onClick={() => selectLogo(id)}
     />

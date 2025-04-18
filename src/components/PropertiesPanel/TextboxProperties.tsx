@@ -1,4 +1,5 @@
-import { Textbox, useTextboxContext } from "../context";
+import { useTextboxContext } from "../../context";
+import { Textbox } from "../../models/Textbox";
 
 export const TextboxProperties: React.FC = () => {
   const { textboxes, selectedTextbox, updateTextboxStyle, updateTextboxMeta, updateTextboxCoords, containerSize } =

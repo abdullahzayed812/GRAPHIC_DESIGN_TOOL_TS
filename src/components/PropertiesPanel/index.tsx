@@ -1,6 +1,6 @@
 import { TextboxProperties } from "./TextboxProperties";
 import { LogoProperties } from "./LogoProperties";
-import { BrandingProperties } from "./BrandingProperties";
+import { BrandingProperties } from "../Branding/BrandingProperties";
 // import { SVGShapeProperties } from "./SVGShapeProperties";
 import { SVGPanel } from "./SVGPanel";
 
