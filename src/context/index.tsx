@@ -93,7 +93,7 @@ export const TextboxProvider: React.FC<TextboxProviderProps> = ({ children }) =>
   const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<ReactNode | null>(null);
   const [parsedSvg, setParsedSvg] = useState<SVGElement[]>([]);
-  const [containerSize, setContainerSize] = useState({ width: "800px", height: "800px" });
+  const [containerSize, setContainerSize] = useState({ width: "800px", height: "1080px" });
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

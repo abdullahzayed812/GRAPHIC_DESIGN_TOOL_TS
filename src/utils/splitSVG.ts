@@ -1,5 +1,7 @@
 import { SVGElement } from "./parseSVG";
 
+// This function is no longer needed as we're handling the hierarchy directly
+// I'm keeping it for reference but it's not used in the enhanced component
 export function splitSVGElements(elements: SVGElement[]): SVGElement[][] {
   // Function to recursively extract all shapes and their children
   function extractShapes(element: SVGElement): SVGElement[] {
@@ -32,4 +34,32 @@ export function splitSVGElements(elements: SVGElement[]): SVGElement[][] {
   }
 
   return splitArrays;
+}
+
+// New interface to represent SVG element with extended properties
+export interface EnhancedSVGElement extends SVGElement {
+  depth?: number;
+  parentId?: string;
+  path?: string[];
+}
+
+// Helper function to assign depth and path information to SVG elements
+export function enrichSVGElements(
+  elements: SVGElement[],
+  parentId?: string,
+  path: string[] = []
+): EnhancedSVGElement[] {
+  return elements.map((element) => {
+    const enhancedElement: EnhancedSVGElement = {
+      ...element,
+      parentId,
+      path: [...path, element.id || "unnamed"],
+    };
+
+    if (element.children && element.children.length > 0) {
+      enhancedElement.children = enrichSVGElements(element.children, element.id, enhancedElement.path);
+    }
+
+    return enhancedElement;
+  });
 }

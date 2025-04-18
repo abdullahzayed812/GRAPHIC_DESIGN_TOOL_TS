@@ -8,7 +8,7 @@ export const CanvasArea = () => {
   return (
     <section className="container-overlay">
       <section className="container" style={{ width: containerSize.width, height: containerSize.height }}>
-        {svgContent && <div className="svg-container">{svgContent}</div>}
+        {svgContent ? <div className="svg-container">{svgContent}</div> : null}
 
         {textboxes.map(({ id, x, y, style }) => (
           <Textbox key={id} id={id} style={style} x={x} y={y} />
