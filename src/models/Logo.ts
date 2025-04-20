@@ -47,15 +47,21 @@ export class LogoManager {
   }
 
   updateCoords(id: string, x: number, y: number): void {
-    this.items = this.items.map((logo) => (logo.id === id ? { ...logo, x, y } : logo));
+    this.items = this.items.map((logo) =>
+      logo.id === id ? { ...logo, x, y } : logo
+    );
   }
 
   updateSize(id: string, width: number, height: number): void {
-    this.items = this.items.map((logo) => (logo.id === id ? { ...logo, width, height } : logo));
+    this.items = this.items.map((logo) =>
+      logo.id === id ? { ...logo, width, height } : logo
+    );
   }
 
   updateMeta(id: string, updates: { label?: string }): void {
-    this.items = this.items.map((logo) => (logo.id === id ? { ...logo, ...updates } : logo));
+    this.items = this.items.map((logo) =>
+      logo.id === id ? { ...logo, ...updates } : logo
+    );
   }
 
   clear(): void {
